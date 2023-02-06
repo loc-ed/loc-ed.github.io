@@ -1,14 +1,14 @@
-const axios = require('axios')
-const cheerio = require('cheerio')
-const chalk = require('chalk')
-const htmlParser = require('htmlparser2')
-const csvStream = require('fast-csv');
-const fs = require("fs");
+import axios from 'axios';
+import { load } from 'cheerio';
+import { green, blue, magenta } from 'chalk';
+import { parseDocument } from 'htmlparser2';
+import { write } from 'fast-csv';
+import { createWriteStream } from "fs";
 
 let currentDate = new Date().toJSON().slice(0, 10);
 const start = Date.now()
 const filename = `ShoeData(${currentDate}).csv`
-const writableFile = fs.createWriteStream(filename);
+const writableFile = createWriteStream(filename);
 
 // international stores
 let sportivaData = []
@@ -42,8 +42,8 @@ let checkFemale = true
 function scrapeEvolv(url, shoeType) {
 
     axios(url).then(response => {
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
                 
             $('div[data-oa-analytics-content]', html).each(function() {
                 
@@ -84,8 +84,8 @@ function scrapeEvolv(url, shoeType) {
 function scrapeScarpa(url , shoeType) {
 
     axios(url).then(response => {
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
             
             $('.product_preview_inner', html).each(function() {
 
@@ -125,8 +125,8 @@ function scrapeScarpa(url , shoeType) {
 function scrapeMadRock(url) {
 
     axios(url).then(response => {
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
      
             $('.product-info', html).each(function() {
                 
@@ -154,8 +154,8 @@ function scrapeSalewa(url, sex) {
 
     axios(url).then(response => {
 
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
 
            $('.listing--content', html).each(function() {
 
@@ -195,8 +195,8 @@ function scrapeSalewa(url, sex) {
 function scrapeSportiva(url, sex) {
 
     axios(url).then(response => {
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
             var nextPageUrl = ''
             var counter = 0
             
@@ -263,8 +263,8 @@ function scrapeDrifters(url, shoeType, assignedCatagory) {
 
     axios(url).then(response => {
 
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
            
 
            $('.product-details', html).each(function() {
@@ -382,8 +382,8 @@ function scrapeTOG(url) {
 
     axios(url).then(response => {
 
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
            
 
            $('.woocommerce-LoopProduct-link', html).each(function() {
@@ -456,8 +456,8 @@ function scrapeRam(url, shoeType) {
 
     axios(url).then(response => {
 
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
            
 
            $('.woocommerce-LoopProduct-link', html).each(function() {
@@ -505,8 +505,8 @@ function scrapeMMO(url, shoeType) {
 
     axios(url).then(response => {
 
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
            
 
            $('.product', html).each(function() {
@@ -572,8 +572,8 @@ function scrapeAdventureInc(url, shoeType) {
 
     axios(url).then(response => {
 
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
             let sex
 
            $('.woo-entry-inner', html).each(function() {
@@ -631,11 +631,11 @@ function compileShoeData() {
 
     const shoeList = HEADER.concat(sportivaData,driftersData,mmoData,togData,ramData,adventureInc, evolData[0],evolData[1], scarpaData,madrockData, salewaData[0], salewaData[1])
     // shoeCSV = convertToCSV(shoeList)
-    csvStream.write(shoeList).pipe(writableFile)
-    console.log(chalk.green.bold(` Shoe CSV has been successfully generated`))
+    write(shoeList).pipe(writableFile)
+    console.log(green.bold(` Shoe CSV has been successfully generated`))
     const end = Date.now()
     let time = (end - start)/1000
-    console.log(chalk.blue.bold(`Execution time: ${time} seconds`))
+    console.log(blue.bold(`Execution time: ${time} seconds`))
 
 }
 //------------------------------------------------------------------------------------------------//
@@ -664,46 +664,46 @@ function compileShoeData() {
 async function initiateScrape() {
 
 
-    console.log(chalk.blue.bold(`Scrape sequence initialized ...`))
+    console.log(blue.bold(`Scrape sequence initialized ...`))
 
     //scraping local domains
-    console.log(chalk.green.bold(`Scraping Local Domains`))
+    console.log(green.bold(`Scraping Local Domains`))
 
-    console.log(chalk.magenta(`Scraping: Adventure Inc Shoes`))
+    console.log(magenta(`Scraping: Adventure Inc Shoes`))
     scrapeAdventureInc('https://www.adventureinc.co.za/product-category/la-sportiva/climbing-footwear/?products-per-page=all','Climbing Shoes')
 
-    console.log(chalk.magenta(`Scraping: MMO Shoes`))
+    console.log(magenta(`Scraping: MMO Shoes`))
     scrapeMMO('https://www.mountainmailorder.co.za/footwear/climbing-shoes/','Climbing Shoes')
 
-    console.log(chalk.magenta(`Scraping: RAM Shoes`))
+    console.log(magenta(`Scraping: RAM Shoes`))
     scrapeRam('https://blackdiamondequipment.co.za/product-category/rock/climbing-shoes/','Climbing Shoes')
 
-    console.log(chalk.magenta(`Scraping: TraverseGear Shoes`))
+    console.log(magenta(`Scraping: TraverseGear Shoes`))
     scrapeTOG('https://traversegear.co.za/product-category/footwear/')
 
-    console.log(chalk.magenta(`Scraping: Drifters Shoes`))
+    console.log(magenta(`Scraping: Drifters Shoes`))
     scrapeDrifters('https://www.driftersshop.co.za/collections/climbing-footwear','Climbing Shoes',null)
 
 
     // scraping international domains 
-    console.log(chalk.green.bold(`Scraping International Domains`))
+    console.log(green.bold(`Scraping International Domains`))
 
-    console.log(chalk.magenta(`Scraping: Evolv Shoes`))
+    console.log(magenta(`Scraping: Evolv Shoes`))
     scrapeEvolv('https://www.evolvsports.com/int/climbing-shoes', 'Climbing Shoes')
 
-    console.log(chalk.magenta(`Scraping: Scarpa Shoes`))
+    console.log(magenta(`Scraping: Scarpa Shoes`))
     scrapeScarpa('https://world.scarpa.com/shop/category/19267839/', 'Climbing Shoes')
 
-    console.log(chalk.magenta(`Scraping: Mad Rock Shoes`))
+    console.log(magenta(`Scraping: Mad Rock Shoes`))
     scrapeMadRock('https://madrock.eu/product-category/shoes/?number=24')
 
-    console.log(chalk.magenta(`Scraping: La Sportiva Shoes`))
+    console.log(magenta(`Scraping: La Sportiva Shoes`))
     scrapeSportiva('https://www.lasportiva.com/en/man/footwear', 'Man')
 
-    console.log(chalk.magenta(`Scraping: Salewa Shoes`))
+    console.log(magenta(`Scraping: Salewa Shoes`))
     scrapeSalewa('https://www.salewa.com/men-mountain-footwear?p=1', 'Man')
 
     return
 }
 
-module.exports = initiateScrape
+export default initiateScrape

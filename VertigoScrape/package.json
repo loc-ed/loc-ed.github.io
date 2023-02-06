@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Web scraping tool for checking product information",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon index.js"
   },

@@ -1,14 +1,14 @@
-const axios = require('axios')
-const cheerio = require('cheerio')
-const chalk = require('chalk')
-const htmlParser = require('htmlparser2')
-const csvStream = require('fast-csv');
-const fs = require("fs");
+import axios from 'axios';
+import { load } from 'cheerio';
+import { green, blue, magenta } from 'chalk';
+import { parseDocument } from 'htmlparser2';
+import { write } from 'fast-csv';
+import { createWriteStream } from "fs";
 
 let currentDate = new Date().toJSON().slice(0, 10);
 const start = Date.now()
 const filename = `Hardware(${currentDate}).csv`
-const writableFile = fs.createWriteStream(filename);
+const writableFile = createWriteStream(filename);
 
 const HEADER = [{
     name : 'Product',
@@ -27,8 +27,8 @@ function scrapeDrifters(url, storeCatagory) {
 
     axios(url).then(response => {
 
-        const html = htmlParser.parseDocument(response.data)
-        const $ = cheerio.load(html)
+        const html = parseDocument(response.data)
+        const $ = load(html)
        
 
        $('.product-details', html).each(function() {
@@ -76,8 +76,8 @@ function scrapeRam(url, storeCatagory) {
     
     axios(url).then(response => {
 
-        const html = htmlParser.parseDocument(response.data)
-        const $ = cheerio.load(html)
+        const html = parseDocument(response.data)
+        const $ = load(html)
 
        $('.woocommerce-LoopProduct-link', html).each(function() {
 
@@ -124,8 +124,8 @@ function scrapeMMO(url, storeCatagory) {
 
     axios(url).then(response => {
 
-            const html = htmlParser.parseDocument(response.data)
-            const $ = cheerio.load(html)
+            const html = parseDocument(response.data)
+            const $ = load(html)
            
 
            $('.product', html).each(function() {
@@ -234,11 +234,11 @@ function getProductCatagory(productName) {
 function compileData() {
 
     const hardwareList = HEADER.concat(mmoData,driftersData,ramData)
-    csvStream.write(hardwareList).pipe(writableFile)
-    console.log(chalk.green.bold(`Hardware CSV has been successfully generated`))
+    write(hardwareList).pipe(writableFile)
+    console.log(green.bold(`Hardware CSV has been successfully generated`))
     const end = Date.now()
     let time = (end - start)/1000
-    console.log(chalk.blue.bold(`Execution time: ${time} seconds`))
+    console.log(blue.bold(`Execution time: ${time} seconds`))
 
 }
 
@@ -266,18 +266,18 @@ function compileData() {
 async function initiateHardwareScrape() {
 
     //scraping local domains
-    console.log(chalk.green.bold(`Scraping Local Domains`))
+    console.log(green.bold(`Scraping Local Domains`))
 
-    console.log(chalk.magenta(`Scraping: MMO Hardware`))
+    console.log(magenta(`Scraping: MMO Hardware`))
     scrapeMMO('https://www.mountainmailorder.co.za/climbing/carabiners/','Carabiners')
 
-    console.log(chalk.magenta(`Scraping: RAM Hardware`))
+    console.log(magenta(`Scraping: RAM Hardware`))
     scrapeRam('https://www.rammountain.co.za/cat/climbing/connectors/','Carabiners & Quickdraws')
 
-    console.log(chalk.magenta(`Scraping: Drifters Hardware`))
+    console.log(magenta(`Scraping: Drifters Hardware`))
     scrapeDrifters('https://www.driftersshop.co.za/collections/carabiners-quickdraws','Carabiners & Quickdraws')
 
     setTimeout(() => {  compileData() }, 5000);
 }
 
-module.exports = initiateHardwareScrape
+export default initiateHardwareScrape

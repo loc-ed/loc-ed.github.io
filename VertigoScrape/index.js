@@ -1,10 +1,10 @@
-const initiateScrape = require('./shoeScrape')
-const initiateHardwareScrape = require('./hardwareScrape')
+import initiateScrape from './shoeScrape'
+import initiateHardwareScrape from './hardwareScrape'
 
 const PORT = 8000
 // const button = document.querySelector("#myButton");
-const express = require('express')
-const chalk = require('chalk')
+import express from 'express'
+import chalk from 'chalk'
 
 function initiateSequence() {
     const app = express()
