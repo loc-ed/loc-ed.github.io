@@ -7,14 +7,16 @@
 </head>
 <body>
 
-  <button class='glowing-btn' id = "scrape" onclick="initiateSequence()"><span class='glowing-txt'>SC<span class='faulty-letter'>R</span>APE</span></button>
+  <!-- <button class='glowing-btn' id = "scrape" onclick="initiateSequence()"><span class='glowing-txt'>SC<span class='faulty-letter'>R</span>APE</span></button> -->
+  <button class='glowing-btn' id = "scrape"><span class='glowing-txt'>SC<span class='faulty-letter'>R</span>APE</span></button>
+  
+  <script>
+    const button = document.querySelector('.glowing-btn');
+    button.addEventListener('click', initiateScrape)
 
-  <!-- <script>
-    const button = document.querySelector("#myButton");
-
-    button.addEventListener("click", function() {
-      alert("Button was clicked");
-    });
-  </script> -->
+    // button.addEventListener("click", function() {
+    //   alert("Button was clicked");
+    // });
+  </script>
 </body>
 </html>
